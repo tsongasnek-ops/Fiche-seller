@@ -15,7 +15,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   }, [product.id]);
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+    return `${price.toFixed(2)} Dhs`;
   };
   
   const goToPrevious = () => {
@@ -86,15 +86,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 ))}
             </div>
         )}
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 flex justify-between items-center">
-            <div className="flex items-baseline gap-2">
-                {product.originalPrice && !product.soldOut && (
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 flex justify-end items-center">
+             {product.originalPrice && !product.soldOut ? (
+                <div className="flex items-baseline gap-3 flex-wrap justify-end">
+                    <p className="text-2xl sm:text-3xl font-bold text-slate-900">{formatPrice(product.price)}</p>
                     <p className="text-md sm:text-lg text-slate-500 line-through">{formatPrice(product.originalPrice)}</p>
-                )}
-            </div>
-            <div className="bg-slate-900 text-white rounded-lg px-4 py-2">
-                <p className="text-xl sm:text-2xl font-bold">{formatPrice(product.price)}</p>
-            </div>
+                    <span className="bg-orange-100 text-orange-600 text-xs sm:text-sm font-bold px-2 py-1 rounded-md">
+                        -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                    </span>
+                </div>
+            ) : (
+                <div className="bg-slate-900 text-white rounded-lg px-4 py-2">
+                    <p className="text-xl sm:text-2xl font-bold">{formatPrice(product.price)}</p>
+                </div>
+            )}
         </div>
       </div>
     </div>

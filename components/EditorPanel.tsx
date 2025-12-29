@@ -153,7 +153,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
                 <legend className={legendStyles}>Pricing</legend>
                 <div className="space-y-4">
                     <div>
-                        <label htmlFor="price" className={labelStyles}>Price (€)</label>
+                        <label htmlFor="price" className={labelStyles}>Price (MAD)</label>
                         <input type="number" id="price" value={price} onChange={(e) => setPrice(e.target.value)} onBlur={handleUpdate} className={inputStyles} />
                     </div>
                     <div>
