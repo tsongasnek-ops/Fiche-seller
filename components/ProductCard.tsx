@@ -42,7 +42,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       )}
       
-      <div className="relative flex-grow grid grid-cols-2 gap-6 items-center">
+      {product.logo && (
+        <div className="flex-shrink-0 flex justify-start items-center pb-4">
+          <img
+            src={product.logo}
+            alt="Brand Logo"
+            className="max-h-8 sm:max-h-10 object-contain"
+            crossOrigin="anonymous"
+          />
+        </div>
+      )}
+
+      <div className="relative flex-grow grid grid-cols-2 gap-6 items-center overflow-hidden">
         {/* Left column for Image */}
         <div className="relative flex items-center justify-center group h-full">
             <img 

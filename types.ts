@@ -9,4 +9,5 @@ export interface Product {
     originalPrice: number | null;
     promotionText: string | null;
     soldOut: boolean;
+    logo?: string | null;
 }

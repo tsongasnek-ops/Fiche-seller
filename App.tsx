@@ -9,6 +9,7 @@ const initialProducts: Product[] = [
   {
     id: 1,
     name: 'Niacinamide 10% + Zinc 1%',
+    logo: 'https://logovector.net/wp-content/uploads/2021/02/the-ordinary-logo-vector.png',
     images: [
       'https://images.ctfassets.net/p332i0hvxu0s/1I251oy1y0IuA6w8SWg4oK/38b815fdd32822a0139e830f353b34241/theordinary-niacinamide-10-zinc-1-30ml.png?w=600&fm=webp',
       'https://images.ctfassets.net/p332i0hvxu0s/283lnnJSAyvpsb0V72C2s/78393b3f2715ad0623ca2f821615f59c/theordinary-niacinamide-10-zinc-1-60ml.png?w=600&fm=webp',
@@ -23,6 +24,7 @@ const initialProducts: Product[] = [
   {
     id: 2,
     name: 'Hyaluronic Acid 2% + B5',
+    logo: 'https://logovector.net/wp-content/uploads/2021/02/the-ordinary-logo-vector.png',
     images: [
       'https://images.ctfassets.net/p332i0hvxu0s/3B2Y062dYmYwG6EC8qWaSe/5e533c39f0490b4a742c8d2024b35e23/theordinary-hyaluronic-acid-2-b5-30ml.png?w=600&fm=webp',
       'https://images.ctfassets.net/p332i0hvxu0s/38uit2G1nTNvjA35g2zT2S/4a74e06c1341d3c01306b88b7d4d4e3f/theordinary-hyaluronic-acid-2-b5-60ml.png?w=600&fm=webp',
@@ -37,6 +39,7 @@ const initialProducts: Product[] = [
   {
     id: 3,
     name: 'Glycolic Acid 7% Toning Solution',
+    logo: 'https://logovector.net/wp-content/uploads/2021/02/the-ordinary-logo-vector.png',
     images: [
       'https://images.ctfassets.net/p332i0hvxu0s/29gJb72j2AysqmAeYg4Q4I/0ee928f09b2e04a1b0201202a0a256a4/theordinary-glycolic-acid-7-toning-solution-240ml.png?w=600&fm=webp',
       'https://images.ctfassets.net/p332i0hvxu0s/43uW44gzg0mwcO0wGkUia4/8f6f56fe456bad110a3341935e4125b0/theordinary-glycolic-acid-7-toning-solution-texture.jpg?w=600&fm=webp'
@@ -51,6 +54,7 @@ const initialProducts: Product[] = [
   {
     id: 4,
     name: 'Lash Curl Finisher',
+    logo: 'https://logovector.net/wp-content/uploads/2021/02/the-ordinary-logo-vector.png',
     images: [
       'https://images.ctfassets.net/p332i0hvxu0s/5No25T20UiC2A44SOi0Ea0/16c87e076e03c6214f4e7052a514e047/theordinary-multi-peptide-lash-and-brow-serum-5ml.png?w=600&fm=webp',
       'https://images.ctfassets.net/p332i0hvxu0s/7vKllL8zWj1M6c8kG004I4/3688b48f936d8590c9527e045e75c602/The_Ordinary_Multi-Peptide_Lash_and_Brow_Serum_Swatch.jpg?w=600&fm=webp'
@@ -107,6 +111,7 @@ const App: React.FC = () => {
         originalPrice: null,
         promotionText: null,
         soldOut: false,
+        logo: null,
       },
     ]);
     setSelectedProductId(id);
@@ -178,7 +183,7 @@ const App: React.FC = () => {
         console.error('Download failed:', e);
         const errorMessage = e instanceof Error ? e.message : String(e);
         alert(
-            `Sorry, the download failed.\n\nThis is usually caused by a network issue or a browser security policy (CORS) that prevents loading external resources like the product image or fonts.\n\nRECOMMENDATIONS:\n1. Check your internet connection and try again.\n2. Disable any ad-blocker or privacy extensions and try again.\n3. Use the "Change Image" button to upload the image from your computer. This is the most reliable method.\n\nError details: ${errorMessage}`
+            `Sorry, the download failed.\n\nThis is usually caused by a network issue or a browser security policy (CORS) that prevents loading external resources like the product image or fonts.\n\nRECOMMENDATIONS:\n1. Check your internet connection and try again.\n2. Disable any ad-blocker or privacy extensions and try again.\n3. Use the "Change Image" or "Change Logo" button to upload the image from your computer. This is the most reliable method.\n\nError details: ${errorMessage}`
         );
     } finally {
         setIsDownloading(false);

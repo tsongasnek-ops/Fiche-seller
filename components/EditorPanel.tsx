@@ -22,6 +22,8 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
   const [description, setDescription] = useState(product.description);
   const [descriptionAr, setDescriptionAr] = useState(product.descriptionAr);
   const [images, setImages] = useState(product.images);
+  const [logo, setLogo] = useState(product.logo ?? '');
+
 
   useEffect(() => {
     if (product) {
@@ -33,6 +35,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
       setDescription(product.description);
       setDescriptionAr(product.descriptionAr);
       setImages(product.images);
+      setLogo(product.logo ?? '');
     }
   }, [product]);
 
@@ -47,6 +50,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
       description,
       descriptionAr,
       images,
+      logo: logo || null,
     });
   };
 
@@ -74,6 +78,25 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
     setImages(updatedImages);
     onUpdate({ ...product, images: updatedImages });
   }
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const newLogo = reader.result as string;
+            setLogo(newLogo);
+            onUpdate({ ...product, logo: newLogo });
+        };
+        reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoDelete = () => {
+      setLogo('');
+      onUpdate({ ...product, logo: null });
+  };
+
 
   const inputStyles = "mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-150";
   const labelStyles = "block text-sm font-medium text-slate-700";
@@ -128,6 +151,24 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
                     <div>
                         <label htmlFor="descriptionAr" className={labelStyles}>Description (Arabic)</label>
                         <textarea id="descriptionAr" rows={3} value={descriptionAr} onChange={(e) => setDescriptionAr(e.target.value)} onBlur={handleUpdate} className={`${inputStyles} text-right font-arabic`} dir="rtl" />
+                    </div>
+                    <div>
+                        <label className={labelStyles}>Brand Logo</label>
+                        <div className="mt-2 flex items-center gap-4">
+                            {logo ? (
+                                <div className="relative group p-2 border rounded-md bg-slate-50">
+                                    <img src={logo} alt="Logo preview" className="h-10 object-contain" />
+                                    <button onClick={handleLogoDelete} className="absolute -top-2 -right-2 bg-white rounded-full text-slate-600 hover:text-red-600 hover:scale-110 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100" aria-label="Delete logo">
+                                      <XCircleIcon />
+                                    </button>
+                                </div>
+                            ) : (
+                                <label htmlFor="logo-add" className="cursor-pointer h-16 w-32 flex items-center justify-center border-2 border-dashed border-slate-300 rounded-md text-slate-400 hover:border-indigo-500 hover:text-indigo-500 transition-colors">
+                                    <span className="text-xs text-center">Add Logo</span>
+                                </label>
+                            )}
+                            <input type="file" id="logo-add" accept="image/png, image/jpeg, image/webp, image/svg+xml" onChange={handleLogoChange} className="hidden" />
+                        </div>
                     </div>
                     <div>
                         <label className={labelStyles}>Product Images</label>
