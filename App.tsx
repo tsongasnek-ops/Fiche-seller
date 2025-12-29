@@ -68,6 +68,8 @@ const initialProducts: Product[] = [
   },
 ];
 
+type AspectRatio = '1:1' | '4:5' | '9:16';
+
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(() => {
     try {
@@ -87,6 +89,7 @@ const App: React.FC = () => {
   );
   
   const [isDownloading, setIsDownloading] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
 
   const cardRef = useRef<HTMLDivElement>(null);
   const selectedProduct = products.find(p => p.id === selectedProductId) ?? null;
@@ -167,16 +170,28 @@ const App: React.FC = () => {
         
         const embeddedFontCss = await fontPromise;
 
+        const baseWidth = 500; // Corresponds to sm:w-[500px]
+        const targetWidth = 1080; // Ideal Instagram width
+        const calculatedPixelRatio = targetWidth / baseWidth;
+
         const dataUrl = await toJpeg(nodeToRender, {
             cacheBust: true,
-            pixelRatio: 2.2,
+            pixelRatio: calculatedPixelRatio,
             fontEmbedCSS: embeddedFontCss,
             quality: 0.95,
         });
 
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = `${selectedProduct.name.replace(/\s+/g, '-').toLowerCase()}.jpg`;
+        
+        const formatNameMap: Record<AspectRatio, string> = {
+            '1:1': 'square',
+            '4:5': 'portrait',
+            '9:16': 'reel-story',
+        };
+        const formatName = formatNameMap[aspectRatio];
+
+        a.download = `${selectedProduct.name.replace(/\s+/g, '-').toLowerCase()}-${formatName}.jpg`;
         a.click();
 
     } catch (e) {
@@ -218,12 +233,17 @@ const App: React.FC = () => {
           onDownload={handleDownload}
           onAddNewProduct={handleAddNewProduct}
           onDeleteProduct={handleDeleteProduct}
+          aspectRatio={aspectRatio}
+          onAspectRatioChange={setAspectRatio}
         />
 
         <div className="lg:col-span-2 flex items-center justify-center p-4">
           {selectedProduct && (
             <div ref={cardRef}>
-              <ProductCard product={selectedProduct} />
+              <ProductCard 
+                product={selectedProduct} 
+                aspectRatio={aspectRatio} 
+              />
             </div>
           )}
         </div>

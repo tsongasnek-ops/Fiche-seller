@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { DownloadIcon, TrashIcon, XCircleIcon } from './icons';
 
+type AspectRatio = '1:1' | '4:5' | '9:16';
+
 interface EditorPanelProps {
   product: Product;
   onUpdate: (product: Product) => void;
@@ -11,9 +13,14 @@ interface EditorPanelProps {
   onDownload: () => void;
   onAddNewProduct: () => void;
   onDeleteProduct: (id: number) => void;
+  aspectRatio: AspectRatio;
+  onAspectRatioChange: (ratio: AspectRatio) => void;
 }
 
-const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProducts, onSelectProduct, onDownload, onAddNewProduct, onDeleteProduct }) => {
+const EditorPanel: React.FC<EditorPanelProps> = ({ 
+  product, onUpdate, allProducts, onSelectProduct, onDownload, 
+  onAddNewProduct, onDeleteProduct, aspectRatio, onAspectRatioChange
+}) => {
   const [name, setName] = useState(product.name);
   const [price, setPrice] = useState(product.price.toString());
   const [originalPrice, setOriginalPrice] = useState(product.originalPrice?.toString() ?? '');
@@ -97,7 +104,6 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
       onUpdate({ ...product, logo: null });
   };
 
-
   const inputStyles = "mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-150";
   const labelStyles = "block text-sm font-medium text-slate-700";
   const fieldsetStyles = "border border-slate-200 p-4 rounded-lg";
@@ -137,6 +143,24 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ product, onUpdate, allProduct
         </div>
 
         <div className="space-y-6 flex-grow overflow-y-auto pr-2 -mr-2">
+            <fieldset className={fieldsetStyles}>
+                <legend className={legendStyles}>Post Format</legend>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 items-center pt-1">
+                    <div className="flex items-center">
+                        <input id="ratio-1-1" type="radio" name="aspect-ratio" value="1:1" checked={aspectRatio === '1:1'} onChange={() => onAspectRatioChange('1:1')} className="h-4 w-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" />
+                        <label htmlFor="ratio-1-1" className="ml-2 block text-sm text-slate-900">Square (1:1)</label>
+                    </div>
+                    <div className="flex items-center">
+                        <input id="ratio-4-5" type="radio" name="aspect-ratio" value="4:5" checked={aspectRatio === '4:5'} onChange={() => onAspectRatioChange('4:5')} className="h-4 w-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" />
+                        <label htmlFor="ratio-4-5" className="ml-2 block text-sm text-slate-900">Portrait (4:5)</label>
+                    </div>
+                    <div className="flex items-center">
+                        <input id="ratio-9-16" type="radio" name="aspect-ratio" value="9:16" checked={aspectRatio === '9:16'} onChange={() => onAspectRatioChange('9:16')} className="h-4 w-4 text-indigo-600 border-slate-300 focus:ring-indigo-500" />
+                        <label htmlFor="ratio-9-16" className="ml-2 block text-sm text-slate-900">Reel / Story (9:16)</label>
+                    </div>
+                </div>
+            </fieldset>
+
             <fieldset className={fieldsetStyles}>
                 <legend className={legendStyles}>Details</legend>
                 <div className="space-y-4">
