@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
-import { DownloadIcon, TrashIcon, XCircleIcon } from './icons';
+import { DownloadIcon, TrashIcon, XCircleIcon, MagicWandIcon } from './icons';
+import { GoogleGenAI, Type } from "@google/genai";
 
 type AspectRatio = '1:1' | '4:5' | '9:16';
 
@@ -30,6 +31,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
   const [descriptionAr, setDescriptionAr] = useState(product.descriptionAr);
   const [images, setImages] = useState(product.images);
   const [logo, setLogo] = useState(product.logo ?? '');
+  const [isGenerating, setIsGenerating] = useState(false);
 
 
   useEffect(() => {
@@ -104,6 +106,71 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
       onUpdate({ ...product, logo: null });
   };
 
+  const handleGenerateDescription = async () => {
+    if (!name.trim()) {
+        alert("Please enter a product name first.");
+        return;
+    }
+    setIsGenerating(true);
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: `You are a marketing copywriter for a minimalist skincare brand like 'The Ordinary'. Your tone is scientific yet accessible.
+            
+            Product Name: "${name}"
+            
+            Generate a short, compelling product description (around 15-20 words) for this product. 
+            Then, provide an accurate, professional Arabic translation of that English description.`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        descriptionEN: {
+                            type: Type.STRING,
+                            description: "The generated product description in English."
+                        },
+                        descriptionAR: {
+                            type: Type.STRING,
+                            description: "The Arabic translation of the product description."
+                        }
+                    },
+                    required: ["descriptionEN", "descriptionAR"]
+                }
+            }
+        });
+
+        if (response.text) {
+            const result = JSON.parse(response.text);
+            const newDescription = result.descriptionEN;
+            const newDescriptionAr = result.descriptionAR;
+            setDescription(newDescription);
+            setDescriptionAr(newDescriptionAr);
+            
+            // Trigger the main update to save the state immediately
+            onUpdate({
+                ...product,
+                name,
+                description: newDescription,
+                descriptionAr: newDescriptionAr,
+                price: parseFloat(price) || 0,
+                originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+                promotionText: promotionText || null,
+                soldOut,
+                images,
+                logo: logo || null,
+            });
+        }
+    } catch (error) {
+        console.error("AI description generation failed:", error);
+        alert("Failed to generate description. This may be due to a network issue or an invalid API Key.");
+    } finally {
+        setIsGenerating(false);
+    }
+  };
+
+
   const inputStyles = "mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-150";
   const labelStyles = "block text-sm font-medium text-slate-700";
   const fieldsetStyles = "border border-slate-200 p-4 rounded-lg";
@@ -162,8 +229,23 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
             </fieldset>
 
             <fieldset className={fieldsetStyles}>
-                <legend className={legendStyles}>Details</legend>
-                <div className="space-y-4">
+                <legend className={`${legendStyles} flex items-center justify-between w-full`}>
+                  <span>Details</span>
+                  <button
+                    onClick={handleGenerateDescription}
+                    disabled={isGenerating || !name.trim()}
+                    className="text-xs font-semibold bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md hover:bg-indigo-100 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+                    title="Generate descriptions with AI"
+                  >
+                    {isGenerating ? (
+                        <svg className="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    ) : (
+                        <MagicWandIcon />
+                    )}
+                    <span>{isGenerating ? 'Generating...' : 'Generate with AI'}</span>
+                  </button>
+                </legend>
+                <div className="space-y-4 pt-2">
                     <div>
                         <label htmlFor="name" className={labelStyles}>Product Name</label>
                         <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} onBlur={handleUpdate} className={inputStyles} />
